@@ -2,7 +2,7 @@ Blink your LED when a satellite is passing by!
 
 ![demo](assets/demo.gif)
 
-This is a small side-project I had for a long time ago but this time I wanted to port it inside the Wemos D1 mini, an ESP8266 microchip that provides a WiFi interface.
+This is a small side-project I had for a long time ago but this time I wanted to port it on a Wemos D1 mini. A board that comes with the ESP8266, a microchip that provides a WiFi interface.
 
 ## Installation
 
