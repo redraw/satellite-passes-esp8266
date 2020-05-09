@@ -1,0 +1,13 @@
+NORAD_ID = 25544
+LAT = -34.1234
+LON = -57.1234
+API = "http://satellites.fly.dev/passes"
+ONLY_VISIBLE = True
+
+PASS_FILE = "pass.json"
+LOG_FILE = "log.txt"
+
+LED_PIN = 4
+
+WIFI_SSID = "<ssid>"
+WIFI_PASS = "<password>"
