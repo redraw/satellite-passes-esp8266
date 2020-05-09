@@ -6,8 +6,8 @@ This is a small side-project I had for a long time ago but this time I wanted to
 
 ## Installation
 
-### Flash Micropython into your ESP8266 board
-[Download](https://micropython.org/download/esp8266/) and flash Micropython following the instructions from the [official website](http://docs.micropython.org/en/latest/esp8266/tutorial/intro.html#intro).
+### Flash MicroPython into your ESP8266 board
+[Download](https://micropython.org/download/esp8266/) and flash MicroPython following the instructions from the [official website](http://docs.micropython.org/en/latest/esp8266/tutorial/intro.html#intro).
 
 After choosing a firmware, these are roughly the steps for any recent Debian distro,
 ```bash
@@ -32,7 +32,7 @@ mpfs [/]> repl
 
 Write `repl`, hit Enter and you're inside Python REPL! You can exit with `Ctrl+]`
 
-Inside `mpshell` you can write `help` to list all commands.
+Inside `mpfshell` you can write `help` to list all commands.
 
 ### Wire RST pin
 This is a requirement to wake up the ESP8266 from deep sleep. The reason is, after fetching the next pass, the code instructs the board to deep sleep until the next pass to save battery. 
@@ -53,7 +53,7 @@ Clone the repo, copy or rename `config.py.example` to `config.py` and set your o
 - `WIFI_SSID` / `WIFI_PASS` , your WiFi credentials.
 
 ### Upload the code
-Enter `mpshell` so that we can upload the files,
+Enter `mpfshell` so that we can upload the files,
 
 ```bash
 mpfs [/]> mput .*\.py
