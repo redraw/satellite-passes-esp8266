@@ -1,7 +1,7 @@
 import os, time, ujson
 from config import LOG_FILE
 
-LOG_ROTATE = 4 * 1024
+LOG_ROTATE = 256 * 1024
 
 def try_stat(fn):
     try:
