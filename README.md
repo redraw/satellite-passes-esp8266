@@ -1,6 +1,6 @@
-Blink your LED when a satellite is passing by!
-
 ![demo](assets/demo.gif)
+
+Blink your LED when a satellite is passing by!
 
 This is a small side-project I had for a long time ago but this time I wanted to port it on a Wemos D1 mini. A board that comes with the ESP8266, a microchip that provides a WiFi interface.
 
@@ -62,4 +62,4 @@ mpfs [/]> mput .*\.py
 Now, just reset the board and that's it (hopefully!).
 
 ## Known Issues with RTC
-RTC clock in ESP8266 is said to [not](http://docs.micropython.org/en/latest/esp8266/general.html?highlight=known%20issues#real-time-clock) be very accurate. That's why in `boot.py` it syncs with an NTP server using `ntptime` at every reset, but I can't be sure if deep sleeping for long hours would drastically drift clock time.
+RTC clock in ESP8266 [is said](http://docs.micropython.org/en/latest/esp8266/general.html?highlight=known%20issues#real-time-clock) to not be very accurate. That's why in `boot.py` it syncs with an NTP server using `ntptime` at every reset, but I can't be sure if deep sleeping for long hours would drastically drift clock time.
