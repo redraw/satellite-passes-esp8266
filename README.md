@@ -62,4 +62,6 @@ mpfs [/]> mput .*\.py
 Now, just reset the board and that's it (hopefully!).
 
 ## Known Issues with RTC
-RTC clock in ESP8266 [is said](http://docs.micropython.org/en/latest/esp8266/general.html?highlight=known%20issues#real-time-clock) to not be very accurate. That's why in `boot.py` it syncs with an NTP server using `ntptime` at every reset, but I can't be sure if deep sleeping for long hours would drastically drift clock time.
+RTC clock in ESP8266 is said to not be very accurate. That's why in `boot.py` it syncs with an NTP server using `ntptime` at every reset, but I can't be sure if deep sleeping for long hours would drastically drift clock time.
+
+*Update:* As far as I've tested, it resets at 71 minutes (milliseconds that fit in `uint32_t`). So, added a limit to wake up the board every 60 minutes, at most.

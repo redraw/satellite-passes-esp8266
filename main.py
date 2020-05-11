@@ -12,46 +12,50 @@ rtc.irq(trigger=rtc.ALARM0, wake=machine.DEEPSLEEP)
 machine.Pin(2, machine.Pin.OUT, 0) # builtin
 led = machine.Pin(LED_PIN, machine.Pin.OUT, 0)
 
+if machine.reset_cause() == machine.DEEPSLEEP_RESET:
+    log("Wake up.")
+
 def query_next_pass():
     response = urequests.get("%s/%s?lat=%s&lon=%s&limit=1" % (API, NORAD_ID, LAT, LON))
-    log("HTTP [%s] satellites.fly.dev" % response.status_code)
+    log("[%s] HTTP %s" % (API, response.status_code))
     if response.status_code >= 400:
         log(response.text)
-        rtc.alarm(rtc.ALARM0, 60 * 60 * 1000) # 1 hour
+        rtc.alarm(rtc.ALARM0, 10 * 60 * 1000) # 10m
         machine.deepsleep()
     return response.json()[0]
 
 def schedule_next_pass():
     data = query_next_pass()
-    when = unix_to_2000_epoch(data["start"]["timestamp"])
     save(PASS_FILE, data)
-    timeout = when - time.time()
-    log("Enter deep sleep. Next pass: %s" % data["start"]["datetime"])
-    log("Timeout: %s seconds" % timeout)
-    rtc.alarm(rtc.ALARM0, timeout * 1000)
-    machine.deepsleep()
+    log("Next pass: %s" % data["start"]["datetime"])
+    return data
 
 def display_pass(seconds):
-    log("ISS pass! Displaying for %s seconds" % seconds)
+    log("Satellite passing! %s seconds" % seconds)
     led.on()
     time.sleep(seconds)
     led.off()
 
-# Load scheduled pass
-scheduled_pass = load(PASS_FILE)
+# Get a scheduled pass
+scheduled_pass = load(PASS_FILE) or schedule_next_pass()
+countdown = unix_to_2000_epoch(scheduled_pass["start"]["timestamp"]) - time.time()
 
-# If woke up, and there's a pass, display pass
-if scheduled_pass and machine.reset_cause() == machine.DEEPSLEEP_RESET:
-    log("Wake up.")
+# If countdown less than 60s, display pass and reset
+if countdown < 60:
     start = scheduled_pass["start"]["timestamp"]
     end = scheduled_pass["end"]["timestamp"]
-    duration_from_now = unix_to_2000_epoch(end) - time.time()
-    if duration_from_now > 0:
-        if not ONLY_VISIBLE or schedule_next_pass["visible"] and ONLY_VISIBLE:
-            display_pass(duration_from_now)
-    else:
-        log("Missed pass, off %s" % duration_from_now)
+    if not ONLY_VISIBLE or schedule_next_pass["visible"] and ONLY_VISIBLE:
+        display_pass(end - start)
     os.remove(PASS_FILE)
+    machine.reset()
 
-# Finally schedule next pass
-schedule_next_pass()
+# RTC resets at 71m. Sleep no more than 60m
+keep_alive = 60 * 60
+rtc_countdown = min(keep_alive, countdown)
+
+# Give 5s to enter raw repl if needed
+time.sleep(5)
+
+log("Deep sleep for %s seconds" % rtc_countdown)
+rtc.alarm(rtc.ALARM0, rtc_countdown * 1000)
+machine.deepsleep()
