@@ -20,11 +20,12 @@ def query_next_pass():
     url = {"base": API, "lat": LAT, "lon": LON, "norad": NORAD_ID, "limit": 1}
     response = urequests.get("{base}/{norad}?lat={lat}&lon={lon}&limit={limit}".format(**url))
     log("[%s] HTTP %s" % (API, response.status_code))
-    if response.status_code >= 400:
+    try:
+        return response.json()[0]
+    except:
         log(response.text)
-        rtc.alarm(rtc.ALARM0, 10 * 60 * 1000) # 10m
+        rtc.alarm(rtc.ALARM0, 60 * 60 * 1000) # 1h
         machine.deepsleep()
-    return response.json()[0]
 
 
 def schedule_next_pass():
@@ -48,8 +49,8 @@ countdown = unix_to_2000_epoch(scheduled_pass["rise"]["utc_timestamp"]) - time.t
 # If countdown less than 60s, display pass and reset
 if countdown < 60:
     start = scheduled_pass["rise"]["utc_timestamp"]
-    end = scheduled_pass["end"]["utc_timestamp"]
-    if not ONLY_VISIBLE or schedule_next_pass["visible"] and ONLY_VISIBLE:
+    end = scheduled_pass["set"]["utc_timestamp"]
+    if not ONLY_VISIBLE or scheduled_pass["visible"] and ONLY_VISIBLE:
         display_pass(end - start)
     os.remove(PASS_FILE)
     machine.reset()
